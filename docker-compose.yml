@@ -1,0 +1,9 @@
+version: '4'
+services:
+  nginx:
+    image: my-react-app:latest
+    ports:
+      - "80:80"       
+    volumes:
+      - ./:/usr/share/nginx/html
+    container_name: my-react-app
