@@ -12,7 +12,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the GitHub repository
-                git 'https://github.com/bswamynathan/capstone.git'
+                git 'https://github.com/bswamynathan/newprojectrepo.git'
             }
         }
 
