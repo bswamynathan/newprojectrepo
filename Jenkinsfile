@@ -5,6 +5,7 @@ pipeline {
         DOCKER_DEV_REPO = 'balaji997/dev'
         DOCKER_PROD_REPO = 'balaji997/prod'
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKER_IMAGE_NAME = 'my-react-app'
     }
 
     stages {
