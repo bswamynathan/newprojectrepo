@@ -2,56 +2,60 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'balaji997/my-react-app'
-        DOCKER_CREDENTIALS_ID = '882a40c3-7ab9-422c-a394-3f30aca1dbff'     
+        DOCKER_DEV_REPO = 'balaji997/dev'
+        DOCKER_PROD_REPO = 'balaji997/prod'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
     }
 
     stages {
-
-
         stage('Clone Repository') {
             steps {
-                // Clone the GitHub repository
-                git 'https://github.com/bswamynathan/newprojectrepo.git'
+                // Clone the repository
+                git url: 'https://github.com/bswamynathan/newprojectrepo.git', branch: "${env.BRANCH_NAME}"
             }
         }
 
         stage('Build Docker Image') {
             steps {
-
-                // Run the build.sh script to build the Docker image
+                // Run the build script to build the Docker image
                 sh './build.sh'
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Deploy and Push to Docker Hub') {
             steps {
-                // Login to Docker Hub and push the Docker image
                 script {
-                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"
+                    def dockerRepo
+                    if (env.BRANCH_NAME == 'master') {
+                        dockerRepo = DOCKER_PROD_REPO
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        dockerRepo = DOCKER_DEV_REPO
+                    } else {
+                        echo "Skipping Docker push: branch is neither 'master' nor 'dev'."
+                        return
+                    }
+
+                    // Log in and push the Docker image
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Login to Docker Hub
+                        echo "Logging in to Docker Hub"
+                        sh '''
+                        echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+                        '''
+
+                        // Tag and push the Docker image
+                        echo "Pushing Docker image to Docker Hub"
+                        sh "docker tag my-react-app:latest ${dockerRepo}:${env.BRANCH_NAME}"
+                        sh "docker push ${dockerRepo}:${env.BRANCH_NAME}"
                     }
                 }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                // Run the deploy.sh script to deploy the Docker container
-                sh './deploy.sh'
             }
         }
     }
 
     post {
         always {
-            cleanWs() // Clean up workspace
-        }
-        success {
-            echo 'Pipeline completed successfully.'
-        }
-        failure {
-            echo 'Pipeline failed.'
+            echo 'Pipeline finished.'
         }
     }
 }
