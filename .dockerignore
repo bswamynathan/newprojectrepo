@@ -1,0 +1,16 @@
+# Ignore node_modules in Docker
+node_modules/
+
+# Ignore test files
+tests/
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore local config files
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
