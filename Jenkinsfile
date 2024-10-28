@@ -46,8 +46,8 @@ pipeline {
 
                         // Tag and push the Docker image
                         echo "Pushing Docker image to Docker Hub"
-                        sh "docker tag my-react-app:latest ${dockerRepo}:${env.BRANCH_NAME}"
-                        sh "docker push ${dockerRepo}:${env.BRANCH_NAME}"
+                        sh "docker tag my-react-app:latest ${dockerRepo}:${DOCKER_IMAGE_NAME}"
+                        sh "docker push ${dockerRepo}:${DOCKER_IMAGE_NAME}"
                     }
                 }
             }
