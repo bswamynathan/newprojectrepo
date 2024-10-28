@@ -5,6 +5,7 @@ pipeline {
         DOCKER_DEV_REPO = 'balaji997/dev'
         DOCKER_PROD_REPO = 'balaji997/prod'
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKER_IMAGE_NAME = 'my-react-app'
     }
 
     stages {
@@ -45,8 +46,8 @@ pipeline {
 
                         // Tag and push the Docker image
                         echo "Pushing Docker image to Docker Hub"
-                        sh "docker tag my-react-app:latest ${dockerRepo}:${env.BRANCH_NAME}"
-                        sh "docker push ${dockerRepo}:${env.BRANCH_NAME}"
+                        sh "docker tag my-react-app:latest ${dockerRepo}:${DOCKER_IMAGE_NAME}"
+                        sh "docker push ${dockerRepo}:${DOCKER_IMAGE_NAME}"
                     }
                 }
             }
